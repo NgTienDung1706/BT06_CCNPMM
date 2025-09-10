@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Spin,
   Button,
@@ -31,8 +31,32 @@ const ProductList = () => {
   const [priceRange, setPriceRange] = useState([0, 60000000]);
   const [minViews, setMinViews] = useState(0);
   const [minRating, setMinRating] = useState(0);
+  const loadMoreRef = useRef(null);
 
   const pageSize = 5;
+
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          pagination.hasNextPage &&
+          !loadingMore
+        ) {
+          loadMore();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => {
+      if (loadMoreRef.current) observer.unobserve(loadMoreRef.current);
+    };
+  }, [pagination, loadingMore]);
 
   const fetchProducts = async (page = 1, append = false) => {
     if (append) {
@@ -226,17 +250,8 @@ const ProductList = () => {
 
       {/* Load more */}
       {pagination.hasNextPage && (
-        <div style={{ textAlign: "center", padding: "20px" }}>
-          <Button
-            type="primary"
-            size="large"
-            icon={<PlusOutlined />}
-            onClick={loadMore}
-            loading={loadingMore}
-            style={{ minWidth: "200px" }}
-          >
-            {loadingMore ? "Đang tải thêm..." : "Tải thêm sản phẩm"}
-          </Button>
+        <div ref={loadMoreRef} style={{ textAlign: "center", padding: "20px" }}>
+          {loadingMore && <Spin size="large" />}
         </div>
       )}
 

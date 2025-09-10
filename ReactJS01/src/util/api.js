@@ -12,7 +12,7 @@ export const loginApi = (email, password) => {
   return axios.post(URL_API, data);
 };
 
-export const getUserApi = (page = 1, limit = 10) => {
+export const getUserApi = (page = 1, limit = 5) => {
   const URL_API = "/v1/api/user";
   return axios.get(URL_API, {
     params: {
@@ -22,7 +22,7 @@ export const getUserApi = (page = 1, limit = 10) => {
   });
 };
 
-export const getProductApi = (page = 1, limit = 10, filters = {}) => {
+export const getProductApi = (page = 1, limit = 5, filters = {}) => {
   const URL_API = "/v1/api/product";
 
   // Gộp page, limit với filters vào params
